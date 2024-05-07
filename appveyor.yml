@@ -1,0 +1,42 @@
+version: 1.0.{build}
+image: Visual Studio 2022
+configuration: Release
+environment:
+  COVERALLS_REPO_TOKEN:
+    secure: <ENCRYPTED TOKEN HERE>
+  keyfile_salt:
+    secure: 7MQg/ApVF+pQ6BH9mIygmZZXYylcKrYU0MDPVhFKq/3lwqrD07yBFDjWnX90WEFDMVPrMKuC2ljPCTsgwlhtnQ==
+  keyfile_secret:
+    secure: 8dwhU0D9ziN3eO21jNuk7XFRU9SpDv8laszr+gCTiwxJx/XmaHGtLn8meL5BIZFV
+install:
+  - ps: iex ((New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/appveyor/secure-file/master/install.ps1'))
+  - cmd: appveyor-tools\secure-file -decrypt LSL.Swashbuckle.AspNetCore\LSL.snk.enc -secret %keyfile_secret% -salt %keyfile_salt%
+  - sh: ./appveyor-tools/secure-file -decrypt LSL.Swashbuckle.AspNetCore/LSL.snk.enc -secret $keyfile_secret -salt $keyfile_salt    
+dotnet_csproj:
+  patch: true
+  file: '**\*.csproj'
+  version: '{version}'
+  package_version: '{version}'
+  assembly_version: '{version}'
+  file_version: '{version}'
+  informational_version: '{version}'
+before_build:
+- dotnet tool install coveralls.net
+build_script:
+- cmd: >-
+    dotnet build -c Release
+
+    dotnet pack -c Release
+test_script:
+- cmd: dotnet test -c Release --no-build --no-restore --test-adapter-path:. --logger:Appveyor /p:CollectCoverage=true /p:CoverletOutputFormat="opencover" /p:CoverletOutput=../lcov
+- cmd: dotnet csmacnz.Coveralls --opencover -i .\lcov.opencover.xml --useRelativePaths
+artifacts:
+- path: '**\*.nupkg'
+deploy:
+- provider: NuGet
+  on:
+    branch: master
+  api_key: $(MY_NUGET_API_KEY)
+skip_commits:
+  files:
+    - '**/*.md'     

@@ -34,7 +34,10 @@ internal class ConfigureSwaggerOptions : IConfigureNamedOptions<SwaggerGenOption
                 CreateVersionInfo(description));
         }
 
-        _options.SwaggerGenOptionsConfigurator?.Invoke(options);
+        foreach (var configurator in _options.SwaggerGenOptionsConfigurators)
+        {
+            configurator?.Invoke(options);
+        };
     }
 
     /// <summary>

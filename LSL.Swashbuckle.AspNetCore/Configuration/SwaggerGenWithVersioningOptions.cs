@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
@@ -12,7 +13,7 @@ public class SwaggerGenWithVersioningOptions
     /// <summary>
     /// Delegate for further configuring SwaggerGenOptions after versioning has been added
     /// </summary>
-    public Action<SwaggerGenOptions>? SwaggerGenOptionsConfigurator { get; set; }
+    public List<Action<SwaggerGenOptions>> SwaggerGenOptionsConfigurators { get; } = new();
 
     /// <summary>
     /// The title for the API

@@ -31,10 +31,16 @@ public static class ServiceCollectionExtensions
         });
 
         var options = new SwaggerGenWithVersioningOptions();
-        configurator?.Invoke(options);
         
-        source.ConfigureOptions(options);
-        source.ConfigureOptions<ConfigureSwaggerOptions>();
+        configurator?.Invoke(options);
+        source.AddSwaggerGen();
+        source.Configure<SwaggerGenWithVersioningOptions>(i =>
+        {
+            i.SwaggerGenOptionsConfigurators.AddRange(options.SwaggerGenOptionsConfigurators);
+            i.Title = options.Title;
+        });
+
+        source.ConfigureOptions<ConfigureSwaggerOptions>();        
 
         return source;
     }

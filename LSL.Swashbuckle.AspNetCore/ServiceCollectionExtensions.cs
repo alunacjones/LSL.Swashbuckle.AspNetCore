@@ -3,8 +3,9 @@ using System.Linq;
 using System.Reflection;
 using Asp.Versioning;
 using LSL.Swashbuckle.AspNetCore.Configuration;
-using LSL.Swashbuckle.AspNetCore.Configurations;
+using LSL.Swashbuckle.AspNetCore.Filters;
 using Microsoft.Extensions.DependencyInjection;
+using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace LSL.Swashbuckle.AspNetCore;
 
@@ -19,7 +20,7 @@ public static class ServiceCollectionExtensions
     /// <param name="source"></param>
     /// <param name="configurator"></param>
     /// <returns></returns>
-    public static IServiceCollection AddSwaggerGenWithVersioning(this IServiceCollection source, Action<SwaggerGenWithVersioningOptions>? configurator = null)
+    public static IServiceCollection AddSwaggerGenWithVersioning(this IServiceCollection source, Action<SwaggerGenOptions>? configurator = null)
     {
         source.AddApiVersioning(c =>
         {
@@ -32,17 +33,11 @@ public static class ServiceCollectionExtensions
             c.SubstituteApiVersionInUrl = true;
         });
 
-        var options = new SwaggerGenWithVersioningOptions();
-        
-        configurator?.Invoke(options);
-        source.AddSwaggerGen();
-        source.Configure<SwaggerGenWithVersioningOptions>(i =>
+        source.AddSwaggerGen(options =>
         {
-            i.SwaggerGenOptionsConfigurators.AddRange(options.SwaggerGenOptionsConfigurators);
-            i.Title = options.Title;
-        });
-
-        source.ConfigureOptions<ConfigureSwaggerOptions>();        
+            configurator?.Invoke(options);
+        })
+        .ConfigureOptions<ConfigureSwaggerOptions>();
 
         return source;
     }
@@ -63,7 +58,8 @@ public static class ServiceCollectionExtensions
 
             o.Version = version;
             o.CommitHash = version.Split("+").ElementAtOrDefault(1) ?? string.Empty;
-        });
+        })
+        .AddSwaggerGen(c => c.DocumentFilter<CodeVersionDocumentFilter>());
 
         return source;
     }
@@ -73,19 +69,6 @@ public static class ServiceCollectionExtensions
     /// </summary>
     /// <param name="source"></param>
     /// <returns></returns>
-    public static IServiceCollection AddCodeVersionForAssemblyOf<T>(this IServiceCollection source)
-    {
-        source.Configure<CodeVersionOptions>(o =>
-        {
-            var version = typeof(T).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion;
-
-            if (version == null) return;
-
-            o.Version = version;
-            o.CommitHash = version.Split("+").ElementAtOrDefault(1) ?? string.Empty;
-        })
-        .AddSwaggerGen(c => c.DocumentFilter<CodeVersionDocumentFilter>());
-
-        return source;
-    }    
+    public static IServiceCollection AddCodeVersionForAssemblyOf<T>(this IServiceCollection source) => 
+        source.AddCodeVersionForAssembly(typeof(T).Assembly);
 }

@@ -1,11 +1,11 @@
-using LSL.Swashbuckle.AspNetCore.Configurations;
+using LSL.Swashbuckle.AspNetCore.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Extensions;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace LSL.Swashbuckle.AspNetCore;
+namespace LSL.Swashbuckle.AspNetCore.Filters;
 
 internal class CodeVersionDocumentFilter : IDocumentFilter
 {

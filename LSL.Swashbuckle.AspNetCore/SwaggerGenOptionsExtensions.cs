@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using LSL.Swashbuckle.AspNetCore.Filters;
 using Microsoft.Extensions.DependencyInjection;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
@@ -53,5 +55,26 @@ public static class SwaggerGenOptionsExtensions
     {
         source.DocumentFilter<CodeVersionAssemblyDescriptionDocumentFilter>();
         return source;
-    }    
+    }
+
+    /// <summary>
+    /// Adds server urls to the open api Servers property
+    /// </summary>
+    /// <param name="source"></param>
+    /// <param name="serverUrls"></param>
+    /// <returns></returns>
+    public static SwaggerGenOptions WithServerUrls(this SwaggerGenOptions source, IEnumerable<string> serverUrls)
+    {        
+        source.DocumentFilter<ServerUrlsDocumentFilter>(serverUrls);        
+        return source;
+    }
+
+    public static SwaggerGenOptions WithTitleFromAssembly(this SwaggerGenOptions source, Assembly assembly)
+    {
+        source.DocumentFilter<TitleDocumentFilter>(assembly.GetName().Name);        
+        return source;
+    }
+
+    public static SwaggerGenOptions WithTitleFromAssemblyOf<T>(this SwaggerGenOptions source) =>
+        source.WithTitleFromAssembly(typeof(T).Assembly); 
 }

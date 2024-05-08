@@ -1,4 +1,4 @@
-namespace LSL.Swashbuckle.AspNetCore.Configurations;
+namespace LSL.Swashbuckle.AspNetCore.Configuration;
 
 internal class CodeVersionOptions
 {

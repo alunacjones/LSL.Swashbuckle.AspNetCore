@@ -4,7 +4,7 @@ using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace LSL.Swashbuckle.AspNetCore;
+namespace LSL.Swashbuckle.AspNetCore.Filters;
 
 /// <summary>
 /// Ensures enum types generate the textual values as opposed to the numberic value

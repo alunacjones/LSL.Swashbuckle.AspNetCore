@@ -3,13 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace LSL.Swashbuckle.AspNetCore.WebApp.Controllers;
 
-[ApiController]
-[Route("v{version:apiVersion}/[controller]")]
-public abstract class BaseController : ControllerBase
-{
-
-}
-
 /// <summary>
 /// Test!
 /// </summary>
@@ -31,16 +24,4 @@ public class TestController : BaseController
 
     [HttpGet("qwe/{value}")]
     public IActionResult Choose(MyEnum value) => Ok(value);
-}
-
-public enum MyEnum
-{
-    Val1,
-    Val2
-}
-
-public class OtherController : ControllerBase
-{
-    [HttpGet("v1/other/test")]
-    public IActionResult Get() => Ok("!!!");
 }

@@ -1,2 +1,0 @@
-namespace LSL.Swashbuckle.AspNetCore;
-

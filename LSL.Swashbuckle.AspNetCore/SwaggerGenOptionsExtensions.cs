@@ -69,12 +69,24 @@ public static class SwaggerGenOptionsExtensions
         return source;
     }
 
+    /// <summary>
+    /// Add the open api title from the name of the given assembly
+    /// </summary>
+    /// <param name="source"></param>
+    /// <param name="assembly"></param>
+    /// <returns></returns>
     public static SwaggerGenOptions WithTitleFromAssembly(this SwaggerGenOptions source, Assembly assembly)
     {
         source.DocumentFilter<TitleDocumentFilter>(assembly.GetName().Name);        
         return source;
     }
 
+    /// <summary>
+    /// Add the open api title from the name of the assembly of the given type
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="source"></param>
+    /// <returns></returns>
     public static SwaggerGenOptions WithTitleFromAssemblyOf<T>(this SwaggerGenOptions source) =>
         source.WithTitleFromAssembly(typeof(T).Assembly); 
 }

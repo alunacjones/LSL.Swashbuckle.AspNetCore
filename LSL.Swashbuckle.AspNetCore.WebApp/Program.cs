@@ -7,13 +7,14 @@ builder.Services.AddControllers();
 
 builder.Services
     .AddCodeVersionForAssemblyOf<Program>()
-    .AddSwaggerGenWithVersioning(c =>
+    .AddSwaggerGenWithVersioning(swaggerOptions =>
     {
-        c.WithTitleFromAssemblyOf<Program>();
-        c.WithSwaggerGenOptionsConfigurator(c => c
-            .AddStringEnumFilter()
-            .AddXmlCommentsForAssemblyOf<Program>()
-            .AddCodeVersionToApiDescription());            
+        swaggerOptions
+            .WithTitleFromAssemblyOf<Program>()
+            .WithSwaggerGenOptionsConfigurator(c => c
+                .AddStringEnumFilter()
+                .AddXmlCommentsForAssemblyOf<Program>()
+                .AddCodeVersionToApiDescription());            
     });
 
 var app = builder.Build();

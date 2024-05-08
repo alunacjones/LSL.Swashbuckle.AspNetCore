@@ -1,4 +1,6 @@
 using System;
+using System.Linq;
+using System.Reflection;
 using Asp.Versioning;
 using LSL.Swashbuckle.AspNetCore.Configuration;
 using LSL.Swashbuckle.AspNetCore.Configurations;
@@ -44,4 +46,46 @@ public static class ServiceCollectionExtensions
 
         return source;
     }
+
+    /// <summary>
+    /// Add code version information to the service collection
+    /// </summary>
+    /// <param name="source"></param>
+    /// <param name="assembly">The assembly whose AssemblyInformationalVersionAttribute will be queried for the required information</param>
+    /// <returns></returns>
+    public static IServiceCollection AddCodeVersionForAssembly(this IServiceCollection source, Assembly assembly)
+    {
+        source.Configure<CodeVersionOptions>(o =>
+        {
+            var version = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion;
+
+            if (version == null) return;
+
+            o.Version = version;
+            o.CommitHash = version.Split("+").ElementAtOrDefault(1) ?? string.Empty;
+        });
+
+        return source;
+    }
+
+    /// <summary>
+    /// Add code version information to the service collection and to the open api document under Info with a new property called x-code-version
+    /// </summary>
+    /// <param name="source"></param>
+    /// <returns></returns>
+    public static IServiceCollection AddCodeVersionForAssemblyOf<T>(this IServiceCollection source)
+    {
+        source.Configure<CodeVersionOptions>(o =>
+        {
+            var version = typeof(T).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion;
+
+            if (version == null) return;
+
+            o.Version = version;
+            o.CommitHash = version.Split("+").ElementAtOrDefault(1) ?? string.Empty;
+        })
+        .AddSwaggerGen(c => c.DocumentFilter<CodeVersionDocumentFilter>());
+
+        return source;
+    }    
 }

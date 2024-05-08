@@ -14,7 +14,7 @@ public static class SwaggerUIOptionsExtensions
     /// <param name="options"></param>
     /// <param name="assembly"></param>
     /// <returns></returns>
-    public static SwaggerUIOptions AddDocumentTitleFromAssmbly(this SwaggerUIOptions options, Assembly assembly)
+    public static SwaggerUIOptions AddDocumentTitleFromAssembly(this SwaggerUIOptions options, Assembly assembly)
     {
         options.DocumentTitle = $"{assembly.GetName().Name} - Swagger UI";
         return options;
@@ -25,6 +25,6 @@ public static class SwaggerUIOptionsExtensions
     /// </summary>
     /// <param name="options"></param>
     /// <returns></returns>
-    public static SwaggerUIOptions AddDocumentTitleFromAssmblyOf<T>(this SwaggerUIOptions options) => 
-        options.AddDocumentTitleFromAssmbly(typeof(T).Assembly);
+    public static SwaggerUIOptions AddDocumentTitleFromAssemblyOf<T>(this SwaggerUIOptions options) => 
+        options.AddDocumentTitleFromAssembly(typeof(T).Assembly);
 }

@@ -43,4 +43,15 @@ public static class SwaggerGenOptionsExtensions
         source.SchemaFilter<EnumSchemaFilter>();
         return source;
     }
+
+    /// <summary>
+    /// Add the code version to the Api Description
+    /// </summary>
+    /// <param name="source"></param>
+    /// <returns></returns>
+    public static SwaggerGenOptions AddCodeVersionToApiDescription(this SwaggerGenOptions source)
+    {
+        source.DocumentFilter<CodeVersionAssemblyDescriptionDocumentFilter>();
+        return source;
+    }    
 }

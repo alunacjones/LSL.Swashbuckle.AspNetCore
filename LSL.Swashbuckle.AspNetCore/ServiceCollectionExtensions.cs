@@ -47,8 +47,9 @@ public static class ServiceCollectionExtensions
     /// </summary>
     /// <param name="source"></param>
     /// <param name="assembly">The assembly whose AssemblyInformationalVersionAttribute will be queried for the required information</param>
+    /// <param name="configurator">Optional configurator to potentially provide a commit URL for your source control provider</param>
     /// <returns></returns>
-    public static IServiceCollection AddCodeVersionForAssembly(this IServiceCollection source, Assembly assembly)
+    public static IServiceCollection AddCodeVersionForAssembly(this IServiceCollection source, Assembly assembly, Action<AddCodeVersionOptions>? configurator = null)
     {
         source.Configure<CodeVersionOptions>(o =>
         {
@@ -56,8 +57,13 @@ public static class ServiceCollectionExtensions
 
             if (version == null) return;
 
+            var options = new AddCodeVersionOptions();
+            configurator?.Invoke(options);
+
+            var commitHash = version.Split("+").ElementAtOrDefault(1) ?? string.Empty;
             o.Version = version;
-            o.CommitHash = version.Split("+").ElementAtOrDefault(1) ?? string.Empty;
+            o.CommitHash = commitHash;
+            o.CommitUrl = commitHash == null ? null : options.CommitUrlProvider?.Invoke(commitHash);
         })
         .AddSwaggerGen(c => c.DocumentFilter<CodeVersionDocumentFilter>());
 
@@ -68,7 +74,8 @@ public static class ServiceCollectionExtensions
     /// Add code version information to the service collection and to the open api document under Info with a new property called x-code-version
     /// </summary>
     /// <param name="source"></param>
+    /// <param name="configurator">Optional configurator to potentially provide a commit URL for your source control provider</param>
     /// <returns></returns>
-    public static IServiceCollection AddCodeVersionForAssemblyOf<T>(this IServiceCollection source) => 
-        source.AddCodeVersionForAssembly(typeof(T).Assembly);
+    public static IServiceCollection AddCodeVersionForAssemblyOf<T>(this IServiceCollection source, Action<AddCodeVersionOptions>? configurator = null) => 
+        source.AddCodeVersionForAssembly(typeof(T).Assembly, configurator);
 }

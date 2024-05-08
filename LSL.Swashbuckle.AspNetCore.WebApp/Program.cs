@@ -1,11 +1,12 @@
 using LSL.Swashbuckle.AspNetCore;
+using LSL.Swashbuckle.AspNetCore.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
 builder.Services
-    .AddCodeVersionForAssemblyOf<Program>()
+    .AddCodeVersionForAssemblyOf<Program>(c => c.AddUrlForDevopsGitCommit("MyOrg", "MyProj", "MyRepo"))
     .AddSwaggerGenWithVersioning()
     .AddSwaggerGenWithVersioning(swaggerGenOptions => swaggerGenOptions        
         .AddStringEnumFilter()

@@ -23,7 +23,8 @@ internal class CodeVersionDocumentFilter : IDocumentFilter
             swaggerDoc.Info.AddExtension("x-code-version", new OpenApiObject
             {
                 ["version"] = new OpenApiString(_options.Version),
-                ["commitHash"] = new OpenApiString(_options.CommitHash)
+                ["commitHash"] = new OpenApiString(_options.CommitHash),
+                ["commitUrl"] = new OpenApiString(_options.CommitUrl)
             });
         }
     }

@@ -18,6 +18,8 @@ internal class CodeVersionAssemblyDescriptionDocumentFilter : IDocumentFilter
     {
         if (_options.Version == null) return;
 
-        swaggerDoc.Info.Description = $"<code>API Code Version {_options.Version}</code>";
+        swaggerDoc.Info.Description = _options.CommitUrl == null  
+            ? $"<code>API Code Version {_options.Version}</code>"
+            : $"<code>API Code Version [{_options.Version}]({_options.CommitUrl})</code>";
     }
 }

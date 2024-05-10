@@ -58,7 +58,8 @@ internal class ConfigureSwaggerOptions : IConfigureNamedOptions<SwaggerGenOption
         
         if (description.IsDeprecated)
         {
-            info.Description += " This API version has been deprecated. Please use one of the new APIs available from the explorer.";
+            var prefix = string.IsNullOrEmpty(info.Description) ? string.Empty : ". ";
+            info.Description += $"{prefix}This API version has been deprecated. Please use one of the new APIs available from the explorer.";
         }
 
         return info;

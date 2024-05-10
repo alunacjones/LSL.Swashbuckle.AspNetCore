@@ -6,7 +6,7 @@ namespace LSL.Swashbuckle.AspNetCore.WebApp.Controllers;
 /// <summary>
 /// Test!
 /// </summary>
-[ApiVersion("1.0")]
+[ApiVersion("1.0", Deprecated = true)]
 [ApiVersion("2.0")]
 public class TestController : BaseController
 {

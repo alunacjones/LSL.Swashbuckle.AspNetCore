@@ -1,5 +1,8 @@
+using System.Diagnostics.CodeAnalysis;
 using LSL.Swashbuckle.AspNetCore;
 using LSL.Swashbuckle.AspNetCore.Configuration;
+
+[assembly:ExcludeFromCodeCoverage]
 
 var builder = WebApplication.CreateBuilder(args);
 

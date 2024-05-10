@@ -14,7 +14,7 @@ install:
   - sh: ./appveyor-tools/secure-file -decrypt LSL.Swashbuckle.AspNetCore/LSL.snk.enc -secret $keyfile_secret -salt $keyfile_salt    
 dotnet_csproj:
   patch: true
-  file: '**\*.csproj'
+  file: '**\*AspNetCore.csproj'
   version: '{version}'
   package_version: '{version}'
   assembly_version: '{version}'

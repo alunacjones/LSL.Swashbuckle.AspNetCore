@@ -1,63 +1,63 @@
 {
-    "openapi": "3.0.1",
-    "servers": [
-      {
-        "url": "https://nowhere.com"
-      }
-    ],
-    "paths": {
-      "/v1/Test": {
-        "get": {
-          "tags": [
-            "Test"
-          ],
-          "summary": "Do a get!",
-          "responses": {
-            "200": {
-              "description": "Success"
-            }
-          }
-        }
-      },
-      "/v1/Test/qwe/{value}": {
-        "get": {
-          "tags": [
-            "Test"
-          ],
-          "parameters": [
-            {
-              "name": "value",
-              "in": "path",
-              "required": true,
-              "schema": {
-                "$ref": "#/components/schemas/MyEnum"
-              }
-            }
-          ],
-          "responses": {
-            "200": {
-              "description": "Success"
-            }
+  "openapi": "3.0.1",
+  "servers": [
+    {
+      "url": "https://nowhere.com"
+    }
+  ],
+  "paths": {
+    "/v1/Test": {
+      "get": {
+        "tags": [
+          "Test"
+        ],
+        "summary": "Do a get!",
+        "responses": {
+          "200": {
+            "description": "OK"
           }
         }
       }
     },
-    "components": {
-      "schemas": {
-        "MyEnum": {
-          "enum": [
-            "Val1",
-            "Val2"
-          ],
-          "type": "string",
-          "format": "int32"
+    "/v1/Test/qwe/{value}": {
+      "get": {
+        "tags": [
+          "Test"
+        ],
+        "parameters": [
+          {
+            "name": "value",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/MyEnum"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
         }
       }
-    },
-    "tags": [
-      {
-        "name": "Test",
-        "description": "Test!"
+    }
+  },
+  "components": {
+    "schemas": {
+      "MyEnum": {
+        "enum": [
+          "Val1",
+          "Val2"
+        ],
+        "type": "string",
+        "format": "int32"
       }
-    ]
-  }
+    }
+  },
+  "tags": [
+    {
+      "name": "Test",
+      "description": "Test!"
+    }
+  ]
+}

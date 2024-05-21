@@ -4,4 +4,4 @@
 
 # LSL.Swashbuckle.AspNetCore
 
-Provide package documentation here.
+This package provides extensions to [Swashbuckle.AspNetCore]

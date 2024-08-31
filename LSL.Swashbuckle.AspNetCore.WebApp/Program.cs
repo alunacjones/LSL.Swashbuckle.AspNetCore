@@ -8,10 +8,33 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
-var versionFormat = args.FirstOrDefault(c => c.StartsWith("--versionFormat"))?.Split('=')[1];
+string? GetArgument(string name) => args.FirstOrDefault(c => c.StartsWith($"--{name}"))?.Split('=')[1];
+
+var versionFormat = GetArgument("versionFormat");
+var commitProvider = GetArgument("commitProvider");
 
 builder.Services
-    .AddCodeVersionForAssemblyOf<Program>(c => c.AddUrlForDevopsGitCommit("MyOrg", "MyProj", "MyRepo"))
+    .AddCodeVersionForAssemblyOf<Program>(c => 
+    {
+        var org = "MyOrg";
+        var project = "MyProj";
+        var repo = "MyRepo";
+
+        switch (commitProvider)
+        {
+            case "devops": 
+                c.AddUrlForDevopsGitCommit(org, project, repo);
+                break;
+
+            case "github": 
+                c.AddUrlForGitHubCommit(org, repo);
+                break;
+
+            case "bitbucket": 
+                c.AddUrlForBitBucketCommit(org, repo);
+                break;                                
+        }
+    })
     .AddSwaggerGenWithVersioning()
     .AddSwaggerGenWithVersioning(swaggerGenOptions => swaggerGenOptions        
         .AddStringEnumFilter()
@@ -20,6 +43,7 @@ builder.Services
         .WithServerUrls(["https://nowhere.com"])
         .WithTitleFromAssemblyOf<Program>()
     ,
+    apiVersioningConfigurator: o => { },
     apiExplorerConfigurator: o => {
         if (versionFormat != null) o.WithVersionNumberFormat(versionFormat);        
     });

@@ -5,17 +5,33 @@ using Newtonsoft.Json.Linq;
 using FluentAssertions.Json;
 using Newtonsoft.Json;
 using FluentAssertions.Execution;
-using System;
+using System.Linq;
 
 namespace LSL.Swashbuckle.AspNetCore.Tests;
+#pragma warning disable CA1861 // Avoid constant arrays as arguments   
 
 public class Tests : BaseIntegrationTest
 {
-    [TestCase("v1", "expected-v1-schema.json", new string[0])]
-    [TestCase("v2", "expected-v2-schema.json", new string[0])]
-    [TestCase("v1.0", "expected-v1.0-schema.json", new[] { "versionFormat=VV" })]
-    [TestCase("v2.0", "expected-v2.0-schema.json", new[] { "versionFormat=VV" })]
-    public async Task DoIt(string apiVersion, string expectationResource, string[] args)
+    [TestCase("devops", "v1", "expected-v1-schema.json", new string[0], @"^https://dev\.azure\.com/MyOrg/MyProj/_git/MyRepo/commit/[a-f0-9]{40}$")]
+    [TestCase("devops", "v2", "expected-v2-schema.json", new string[0], @"^https://dev\.azure\.com/MyOrg/MyProj/_git/MyRepo/commit/[a-f0-9]{40}$")]
+    [TestCase("devops", "v1.0", "expected-v1.0-schema.json", new[] { "versionFormat=VV" }, @"^https://dev\.azure\.com/MyOrg/MyProj/_git/MyRepo/commit/[a-f0-9]{40}$")]
+    [TestCase("devops", "v2.0", "expected-v2.0-schema.json", new[] { "versionFormat=VV" }, @"^https://dev\.azure\.com/MyOrg/MyProj/_git/MyRepo/commit/[a-f0-9]{40}$")]
+
+    [TestCase("github", "v1", "expected-v1-schema.json", new string[0], @"^https://github\.com/MyOrg/MyRepo/commit/[a-f0-9]{40}$")]
+    [TestCase("github", "v2", "expected-v2-schema.json", new string[0], @"^https://github\.com/MyOrg/MyRepo/commit/[a-f0-9]{40}$")]
+    [TestCase("github", "v1.0", "expected-v1.0-schema.json", new[] { "versionFormat=VV" }, @"^https://github\.com/MyOrg/MyRepo/commit/[a-f0-9]{40}$")]
+    [TestCase("github", "v2.0", "expected-v2.0-schema.json", new[] { "versionFormat=VV" }, @"^https://github\.com/MyOrg/MyRepo/commit/[a-f0-9]{40}$")]
+
+    [TestCase("bitbucket", "v1", "expected-v1-schema.json", new string[0], @"^https://bitbucket\.org/MyOrg/MyRepo/commits/[a-f0-9]{40}$")]
+    [TestCase("bitbucket", "v2", "expected-v2-schema.json", new string[0], @"^https://bitbucket\.org/MyOrg/MyRepo/commits/[a-f0-9]{40}$")]
+    [TestCase("bitbucket", "v1.0", "expected-v1.0-schema.json", new[] { "versionFormat=VV" }, @"^https://bitbucket\.org/MyOrg/MyRepo/commits/[a-f0-9]{40}$")]
+    [TestCase("bitbucket", "v2.0", "expected-v2.0-schema.json", new[] { "versionFormat=VV" }, @"^https://bitbucket\.org/MyOrg/MyRepo/commits/[a-f0-9]{40}$")]
+
+    [TestCase(null, "v1", "expected-v1-schema.json", new string[0], null)]
+    [TestCase(null, "v2", "expected-v2-schema.json", new string[0], null)]
+    [TestCase(null, "v1.0", "expected-v1.0-schema.json", new[] { "versionFormat=VV" }, null)]
+    [TestCase(null, "v2.0", "expected-v2.0-schema.json", new[] { "versionFormat=VV" }, null)]
+    public async Task DoIt(string commitProvider, string apiVersion, string expectationResource, string[] args, string expectedCommitUrlRegex)
     {
         await RunTests(async app =>
         {
@@ -32,14 +48,25 @@ public class Tests : BaseIntegrationTest
             using var _ = new AssertionScope();
 
             info.Title.Should().Be("LSL.Swashbuckle.AspNetCore.WebApp");
-            info.Description.Should().StartWith("<code>API Code Version [1.0.0+");
-            info.CodeVersion.CommitHash.Should().MatchRegex(@"^[a-f0-9]{40}$");
-            info.CodeVersion.CommitUrl.Should().MatchRegex(@"^https://dev.azure.com/MyOrg/MyProj/_git/MyRepo/commit/[a-f0-9]{40}$");
+
+            if (expectedCommitUrlRegex == null)
+            {
+                info.Description.Should().StartWith("<code>API Code Version 1.0.0+");
+                info.CodeVersion.CommitUrl.Should().BeNull();
+            }
+            else
+            {
+                info.Description.Should().StartWith("<code>API Code Version [1.0.0+");
+                info.Description.Should().MatchRegex($"{expectedCommitUrlRegex[1..^1]}\\)</code>$");
+                info.CodeVersion.CommitUrl.Should().MatchRegex(expectedCommitUrlRegex);
+            }
+            
+            info.CodeVersion.CommitHash.Should().MatchRegex(@"^[a-f0-9]{40}$");            
             info.CodeVersion.Version.Should().MatchRegex(@"1\.0\.0\+[a-f0-9]{40}");
 
             contentWithoutInfo.Should().BeEquivalentTo(JObject.Parse(await GetResource(expectationResource)));
         },
-        commandLineArguments: args);
+        commandLineArguments: args.Concat([$"commitProvider={commitProvider}"]));
     }
 
     internal class InfoCodeVersion
@@ -50,10 +77,11 @@ public class Tests : BaseIntegrationTest
         public string Title { get; set; } = default!;
     }
 
-    internal class CodeVersion 
+    internal class CodeVersion
     {
         public string CommitHash { get; set; } = default!;
         public string Version { get; set; } = default!;
         public string CommitUrl { get; set; } = default!;
     }
 }
+#pragma warning restore CA1861 // Avoid constant arrays as arguments    

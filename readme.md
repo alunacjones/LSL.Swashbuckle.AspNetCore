@@ -68,3 +68,14 @@ app.UseSwaggerUIWithVersioning(c =>
     c.AddDocumentTitleFromAssemblyOf<Program>();
 });
 ```
+
+> **NOTE**: It is recommended to setup a base controller to inherit from in your own controllers as follows:
+
+```csharp
+[ApiController]
+[Route("v{version:apiVersion}/[controller]")]
+public abstract class BaseController : ControllerBase
+{
+    
+}
+```

@@ -5,14 +5,17 @@ using Newtonsoft.Json.Linq;
 using FluentAssertions.Json;
 using Newtonsoft.Json;
 using FluentAssertions.Execution;
+using System;
 
 namespace LSL.Swashbuckle.AspNetCore.Tests;
 
 public class Tests : BaseIntegrationTest
 {
-    [TestCase("v1", "expected-v1-schema.json")]
-    [TestCase("v2", "expected-v2-schema.json")]
-    public async Task DoIt(string apiVersion, string expectationResource)
+    [TestCase("v1", "expected-v1-schema.json", new string[0])]
+    [TestCase("v2", "expected-v2-schema.json", new string[0])]
+    [TestCase("v1.0", "expected-v1.0-schema.json", new[] { "versionFormat=VV" })]
+    [TestCase("v2.0", "expected-v2.0-schema.json", new[] { "versionFormat=VV" })]
+    public async Task DoIt(string apiVersion, string expectationResource, string[] args)
     {
         await RunTests(async app =>
         {
@@ -35,7 +38,8 @@ public class Tests : BaseIntegrationTest
             info.CodeVersion.Version.Should().MatchRegex(@"1\.0\.0\+[a-f0-9]{40}");
 
             contentWithoutInfo.Should().BeEquivalentTo(JObject.Parse(await GetResource(expectationResource)));
-        });
+        },
+        commandLineArguments: args);
     }
 
     internal class InfoCodeVersion

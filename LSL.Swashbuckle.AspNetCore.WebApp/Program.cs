@@ -8,6 +8,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
+var versionFormat = args.FirstOrDefault(c => c.StartsWith("--versionFormat"))?.Split('=')[1];
+
 builder.Services
     .AddCodeVersionForAssemblyOf<Program>(c => c.AddUrlForDevopsGitCommit("MyOrg", "MyProj", "MyRepo"))
     .AddSwaggerGenWithVersioning()
@@ -17,7 +19,10 @@ builder.Services
         .AddCodeVersionToApiDescription()       
         .WithServerUrls(["https://nowhere.com"])
         .WithTitleFromAssemblyOf<Program>()
-    );
+    ,
+    apiExplorerConfigurator: o => {
+        if (versionFormat != null) o.WithVersionNumberFormat(versionFormat);        
+    });
 
 var app = builder.Build();
 

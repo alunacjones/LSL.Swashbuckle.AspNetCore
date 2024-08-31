@@ -1,6 +1,9 @@
 using System;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.SwaggerUI;
 
 namespace LSL.Swashbuckle.AspNetCore;
@@ -27,12 +30,23 @@ public static class ApplicationBuilderExtensions
             configurator?.Invoke(options);        
             swaggerEndpointPathBase = string.IsNullOrEmpty(swaggerEndpointPathBase) ? string.Empty : $"/{swaggerEndpointPathBase}";
             
+            using var scope = source.ApplicationServices.CreateScope();
+
+            var internalOptions = scope.ServiceProvider.GetRequiredService<IOptionsSnapshot<InternalOptions>>().Value;
+            
             foreach (var apiVersion in apiVersions)
             {
-                options.SwaggerEndpoint($"{swaggerEndpointPathBase}/{options.RoutePrefix}/{apiVersion.GroupName}/swagger.json", apiVersion.GroupName);
+                var url = $"{swaggerEndpointPathBase}/{options.RoutePrefix}/{apiVersion.GroupName}/swagger.json";
+                internalOptions.SwaggerDocUrls.Add(apiVersion.GroupName, url);
+                options.SwaggerEndpoint(url, apiVersion.GroupName);
             }
         });
 
         return source;
+    }
+
+    internal class InternalOptions
+    {
+        public Dictionary<string, string> SwaggerDocUrls = new();
     }
 }

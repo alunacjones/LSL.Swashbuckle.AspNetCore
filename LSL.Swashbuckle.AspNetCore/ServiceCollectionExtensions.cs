@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Reflection;
 using Asp.Versioning;
+using Asp.Versioning.ApiExplorer;
 using LSL.Swashbuckle.AspNetCore.Configuration;
 using LSL.Swashbuckle.AspNetCore.Filters;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,24 +19,33 @@ public static class ServiceCollectionExtensions
     /// Sets up Swashbuckle and Asp.Versioning to handle multiple api versions with common sense defaults
     /// </summary>
     /// <param name="source"></param>
-    /// <param name="configurator"></param>
+    /// <param name="swaggerGenconfigurator"></param>
+    /// <param name="apiVersioningConfigurator"></param>
+    /// <param name="apiExplorerConfigurator"></param>
     /// <returns></returns>
-    public static IServiceCollection AddSwaggerGenWithVersioning(this IServiceCollection source, Action<SwaggerGenOptions>? configurator = null)
+    public static IServiceCollection AddSwaggerGenWithVersioning(
+        this IServiceCollection source,
+        Action<SwaggerGenOptions>? swaggerGenconfigurator = null,
+        Action<ApiVersioningOptions>? apiVersioningConfigurator = null,
+        Action<ApiExplorerOptions>? apiExplorerConfigurator = null)
     {
         source.AddApiVersioning(c =>
         {
             c.DefaultApiVersion = new ApiVersion(1, 0);
             c.ApiVersionReader = new UrlSegmentApiVersionReader();
+            c.ReportApiVersions = true;
+            apiVersioningConfigurator?.Invoke(c);
         })
         .AddApiExplorer(c =>
         {
             c.GroupNameFormat = "'v'VVV";
             c.SubstituteApiVersionInUrl = true;
+            apiExplorerConfigurator?.Invoke(c);
         });
 
         source.AddSwaggerGen(options =>
         {
-            configurator?.Invoke(options);
+            swaggerGenconfigurator?.Invoke(options);
         })
         .ConfigureOptions<ConfigureSwaggerOptions>();
 
@@ -49,7 +59,10 @@ public static class ServiceCollectionExtensions
     /// <param name="assembly">The assembly whose AssemblyInformationalVersionAttribute will be queried for the required information</param>
     /// <param name="configurator">Optional configurator to potentially provide a commit URL for your source control provider</param>
     /// <returns></returns>
-    public static IServiceCollection AddCodeVersionForAssembly(this IServiceCollection source, Assembly assembly, Action<AddCodeVersionOptions>? configurator = null)
+    public static IServiceCollection AddCodeVersionForAssembly(
+        this IServiceCollection source,
+        Assembly assembly,
+        Action<AddCodeVersionOptions>? configurator = null)
     {
         source.Configure<CodeVersionOptions>(o =>
         {

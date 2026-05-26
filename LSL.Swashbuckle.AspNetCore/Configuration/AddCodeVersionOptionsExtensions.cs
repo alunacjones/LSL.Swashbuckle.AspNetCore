@@ -45,5 +45,20 @@ public static class AddCodeVersionOptionsExtensions
     {
         source.CommitUrlProvider = new Func<string, string>(hash => $"https://github.com/{organisationName}/{repositoryName}/commit/{hash}");
         return source;
-    }    
+    }
+
+    /// <summary>
+    /// Adds an additional description
+    /// </summary>
+    /// <remarks>
+    /// Can be called multiple times
+    /// </remarks>
+    /// <param name="source"></param>
+    /// <param name="additionalDescription"></param>
+    /// <returns></returns>
+    public static AddCodeVersionOptions AddAdditionalDescription(this AddCodeVersionOptions source, string additionalDescription)
+    {
+        source.AdditionalDescription = (source.AdditionalDescription ?? string.Empty) + additionalDescription;
+        return source;
+    }
 }

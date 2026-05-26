@@ -5,4 +5,6 @@ internal class CodeVersionOptions
     public string Version { get; set; } = default!;
     public string CommitHash { get; set; } = default!;
     public string? CommitUrl { get; set; } 
+
+    public string? AdditionalDescription { get; set; }
 }

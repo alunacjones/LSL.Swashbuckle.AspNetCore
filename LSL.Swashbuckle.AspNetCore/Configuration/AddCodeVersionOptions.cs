@@ -11,4 +11,6 @@ public class AddCodeVersionOptions
     /// A provider that takes a commit hash and returns a URL to the actual commit on the provider's site
     /// </summary>
     public Func<string, string?> CommitUrlProvider { get; set; } = _ => null;
+
+    internal string? AdditionalDescription { get;set; }
 }

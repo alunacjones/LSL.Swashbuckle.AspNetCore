@@ -7,7 +7,7 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 namespace LSL.Swashbuckle.AspNetCore.Filters;
 
 /// <summary>
-/// Ensures enum types generate the textual values as opposed to the numberic value
+/// Ensures enum types generate the textual values as opposed to the numeric value
 /// </summary>
 public class EnumSchemaFilter : ISchemaFilter
 {

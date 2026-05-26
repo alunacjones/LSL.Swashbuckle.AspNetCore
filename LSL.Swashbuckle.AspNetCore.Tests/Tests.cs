@@ -57,10 +57,11 @@ public class Tests : BaseIntegrationTest
             else
             {
                 info.Description.Should().StartWith("<code>API Code Version [1.0.0+");
-                info.Description.Should().MatchRegex($"{expectedCommitUrlRegex[1..^1]}\\)</code>$");
+                info.Description.Should().MatchRegex($"{expectedCommitUrlRegex[1..^1]}\\)</code><h1>Custom description</h1>$");
                 info.CodeVersion.CommitUrl.Should().MatchRegex(expectedCommitUrlRegex);
             }
             
+            info.Description.Should().EndWith("<h1>Custom description</h1>");
             info.CodeVersion.CommitHash.Should().MatchRegex(@"^[a-f0-9]{40}$");            
             info.CodeVersion.Version.Should().MatchRegex(@"1\.0\.0\+[a-f0-9]{40}");
 

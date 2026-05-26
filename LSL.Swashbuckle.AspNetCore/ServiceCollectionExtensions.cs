@@ -77,6 +77,7 @@ public static class ServiceCollectionExtensions
             o.Version = version;
             o.CommitHash = commitHash;
             o.CommitUrl = commitHash == null ? null : options.CommitUrlProvider?.Invoke(commitHash);
+            o.AdditionalDescription = options.AdditionalDescription;
         })
         .AddSwaggerGen(c => c.DocumentFilter<CodeVersionDocumentFilter>());
 

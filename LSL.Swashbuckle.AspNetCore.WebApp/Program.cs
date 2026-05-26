@@ -34,12 +34,14 @@ builder.Services
                 c.AddUrlForBitBucketCommit(org, repo);
                 break;                                
         }
+
+        c.AddAdditionalDescription("<h1>Custom description</h1>");
     })
     .AddSwaggerGenWithVersioning()
     .AddSwaggerGenWithVersioning(swaggerGenOptions => swaggerGenOptions        
         .AddStringEnumFilter()
         .AddXmlCommentsForAssemblyOf<Program>()
-        .AddCodeVersionToApiDescription()       
+        .AddCodeVersionToApiDescription()
         .WithServerUrls(["https://nowhere.com"])
         .WithTitleFromAssemblyOf<Program>()
     ,

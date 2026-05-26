@@ -14,16 +14,16 @@ namespace LSL.Swashbuckle.AspNetCore;
 public static class ApplicationBuilderExtensions
 {
     /// <summary>
-    /// Register SwaggerUI with mutiple API versions 
+    /// Register SwaggerUI with multiple API versions 
     /// </summary>
     /// <param name="source"></param>
     /// <param name="configurator"></param>
     /// <param name="swaggerEndpointPathBase"></param>
     /// <returns></returns>
-    /// <exception cref="ArgumentException">Thrown when the soure IApplicationBuilder does not implement IEndpointRouteBuilder</exception>
+    /// <exception cref="ArgumentException">Thrown when the source IApplicationBuilder does not implement IEndpointRouteBuilder</exception>
     public static IApplicationBuilder UseSwaggerUIWithVersioning(this IApplicationBuilder source, Action<SwaggerUIOptions>? configurator = null, string? swaggerEndpointPathBase = null)
     {
-        var apiVersions = ((source as IEndpointRouteBuilder)?.DescribeApiVersions()) ?? throw new ArgumentException("Provided IApplicationBuilder instance does not implemet IEndpointRouteBuilder", nameof(source));
+        var apiVersions = ((source as IEndpointRouteBuilder)?.DescribeApiVersions()) ?? throw new ArgumentException("Provided IApplicationBuilder instance does not implement IEndpointRouteBuilder", nameof(source));
 
         source.UseSwaggerUI(options =>
         {    
